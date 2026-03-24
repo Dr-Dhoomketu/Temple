@@ -45,11 +45,12 @@ function TempleCanvas({
   cameraPosition: [number, number, number];
   enableOrbit: boolean;
 }) {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   return (
     <Canvas
       camera={{ position: cameraPosition, fov: 45 }}
       gl={{ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false }}
-      dpr={[1, 1.5]}
+      dpr={isMobile ? [1, 1] : [1, 1.5]}
       style={{ background: "transparent" }}
     >
       <Suspense fallback={<Loader3D />}>
@@ -168,11 +169,6 @@ function checkWebGL(): boolean {
   }
 }
 
-function isMobile(): boolean {
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
-    window.innerWidth < 768;
-}
-
 interface TempleSceneProps {
   scrollY?: number;
   height?: string;
@@ -189,11 +185,6 @@ export default function TempleScene({
   const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // On mobile skip WebGL entirely — use SVG fallback for performance
-    if (isMobile()) {
-      setWebglSupported(false);
-      return;
-    }
     setWebglSupported(checkWebGL());
   }, []);
 

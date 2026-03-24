@@ -161,11 +161,6 @@ function checkWebGL() {
   } catch { return false; }
 }
 
-function isMobile() {
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
-    window.innerWidth < 768;
-}
-
 interface Props {
   rotationY?: number;
   height?: string;
@@ -175,9 +170,9 @@ export default function TempleModel3D({ rotationY = 0, height = "100%" }: Props)
   const [webgl, setWebgl] = useState<boolean | null>(null);
   // Stable pointer object — never recreated
   const ptr = useRef(makePointer()).current;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   useEffect(() => {
-    if (isMobile()) { setWebgl(false); return; }
     setWebgl(checkWebGL());
   }, []);
 
@@ -232,7 +227,7 @@ export default function TempleModel3D({ rotationY = 0, height = "100%" }: Props)
       <Canvas
         camera={{ fov: 45, near: 0.1, far: 2000 }}
         gl={{ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false, toneMappingExposure: 1.8 }}
-        dpr={[1, 1.5]}
+        dpr={isMobile ? [1, 1] : [1, 1.5]}
         style={{ background: "transparent", position: "relative", zIndex: 1 }}
       >
         <Scene baseRotY={rotationY} ptr={ptr} />
