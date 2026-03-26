@@ -1,0 +1,1 @@
+This file has been renamed from replit.md to Mandir.md.
