@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import DiyaToggle from "./DiyaToggle";
 
 const navLinks = [
   { label: "Temple", href: "#temple" },
   { label: "Pujaris", href: "#pujaris" },
   { label: "Timings", href: "#timings" },
-  { label: "Donate", href: "#donate" },
+  { label: "Donations", href: "#donate" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -46,7 +48,10 @@ export default function Navbar() {
             height="36"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            style={{ filter: "drop-shadow(0 0 6px rgba(212,175,55,0.7))", flexShrink: 0 }}
+            style={{
+              filter: "drop-shadow(0 0 6px rgba(212,175,55,0.7))",
+              flexShrink: 0,
+            }}
             aria-label="Om symbol"
           >
             <defs>
@@ -92,7 +97,7 @@ export default function Navbar() {
           ))}
           <DiyaToggle />
           <button
-            onClick={() => handleLinkClick("#donate")}
+            onClick={() => navigate("/donate")}
             className="px-5 py-2 bg-[#D4AF37] text-[#1a0303] font-cinzel text-xs font-semibold tracking-widest rounded-sm hover:bg-[#F5E088] transition-colors duration-300"
           >
             Donate Now
@@ -129,7 +134,7 @@ export default function Navbar() {
             </button>
           ))}
           <button
-            onClick={() => handleLinkClick("#donate")}
+            onClick={() => navigate("/donate")}
             className="mt-3 w-full py-3 bg-[#D4AF37] text-[#1a0303] font-cinzel text-xs font-semibold tracking-widest rounded-sm hover:bg-[#F5E088] transition-colors duration-300"
           >
             Donate Now
