@@ -449,7 +449,7 @@ export default function DonatePage() {
               </motion.button>
 
               <p className="font-sans text-[10px] text-[#F5F5DC]/25 text-center">
-                All donations are tax-exempt under Section 80G of the Income Tax Act.
+                Thank YOU
               </p>
             </motion.form>
           )}
