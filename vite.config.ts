@@ -23,9 +23,17 @@ export default defineConfig({
     watch: {
       ignored: [
         "**/.local/**",
+        "**/.cache/**",
         "**/node_modules/**",
+        "**/server/**",
         "**/.git/**",
       ],
+    },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
     },
   },
   preview: {

@@ -96,6 +96,21 @@ export default function DonatePage() {
         ? `DON-${String(data[0].id).padStart(6, "0")}`
         : `DON-${Date.now().toString().slice(-6)}`;
       setDonationId(id);
+
+      // Send thank-you email (fire-and-forget — don't block success state)
+      fetch("/api/send-donation-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          seva_type: form.seva_type,
+          amount: effectiveAmount,
+          payment_method: form.payment_method,
+          donation_id: id,
+        }),
+      }).catch((err) => console.warn("Email send failed (non-critical):", err));
+
       setStatus("success");
     } catch (err) {
       console.error(err);
