@@ -467,7 +467,7 @@ export function buildDonationEmail({ name, seva_type, amount, payment_method, do
 
     <!-- CTA -->
     <div class="cta-wrap">
-      <a href="https://shrirammandirtemple.org" class="cta-btn">Visit the Mandir</a>
+      <a href="https://temple-opal-pi.vercel.app/" class="cta-btn">Visit the Mandir</a>
     </div>
 
     <!-- Signature -->
