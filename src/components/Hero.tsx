@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import TempleScene from "./TempleScene";
 import { useTheme } from "@/context/ThemeContext";
 
-const DOOR_START  = 2600;
-const DOOR_END    = 5000;
-const CONTENT_IN  = 6000;
+const DOOR_START  = 800;
+const DOOR_END    = 2200;
+const CONTENT_IN  = 2800;
 
 export default function Hero() {
   const [phase, setPhase] = useState<"closed"|"glowing"|"opening"|"open"|"content">("closed");
