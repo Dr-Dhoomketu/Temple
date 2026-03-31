@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
 import { useLocation } from "wouter";
+import { useTheme } from "@/context/ThemeContext";
 
 const trustees = [
   { name: "Shri Mahesh Kumar Gupta", position: "Chairman, Board of Trustees", icon: "👑", tenure: "Since 1995" },
@@ -67,7 +68,7 @@ const particles = Array.from({ length: 28 }, (_, i) => ({
   duration: 4 + Math.random() * 5,
 }));
 
-function AnimatedStat({ value, label, inView }: { value: string; label: string; inView: boolean }) {
+function AnimatedStat({ value, label, inView, isLight = false }: { value: string; label: string; inView: boolean; isLight?: boolean }) {
   const [display, setDisplay] = useState("0");
   const numericValue = parseInt(value.replace(/\D/g, ""));
 
@@ -83,10 +84,14 @@ function AnimatedStat({ value, label, inView }: { value: string; label: string; 
 
   return (
     <div className="text-center">
-      <div className="font-cinzel font-bold text-3xl text-[#D4AF37]" style={{ textShadow: "0 0 20px rgba(212,175,55,0.6)" }}>
+      <div className="font-cinzel font-bold text-3xl" style={{
+        color: isLight ? "#C25B2F" : "#D4AF37",
+        textShadow: isLight ? "none" : "0 0 20px rgba(212,175,55,0.6)",
+      }}>
         {display}
       </div>
-      <div className="font-cinzel text-[10px] tracking-widest text-[#D4AF37]/60 uppercase mt-1">{label}</div>
+      <div className="font-cinzel text-[10px] tracking-widest uppercase mt-1"
+        style={{ color: isLight ? "rgba(194,91,47,0.6)" : "rgba(212,175,55,0.6)" }}>{label}</div>
     </div>
   );
 }
@@ -435,13 +440,19 @@ function LotusBloom({ inView }: { inView: boolean }) {
 
 export default function DonationSection() {
   const ref = useRef(null);
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [, navigate] = useLocation();
 
   return (
     <section id="donate" className="relative py-24 overflow-hidden">
       {/* Background layers */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#080101] via-[#120202] to-[#060101]" />
+      <div className="absolute inset-0" style={{
+        background: isLight
+          ? "linear-gradient(to bottom, #FFEDCC, #FFF3E0, #FFEDCC)"
+          : "linear-gradient(to bottom, #080101, #120202, #060101)",
+      }} />
 
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -454,12 +465,12 @@ export default function DonationSection() {
               top: `${p.y}%`,
               width: p.size,
               height: p.size,
-              background: "#D4AF37",
-              boxShadow: `0 0 ${p.size * 3}px rgba(212,175,55,0.8)`,
+              background: isLight ? "#C25B2F" : "#D4AF37",
+              boxShadow: `0 0 ${p.size * 3}px ${isLight ? "rgba(194,91,47,0.6)" : "rgba(212,175,55,0.8)"}`,
             }}
             animate={{
               y: [0, -40, 0],
-              opacity: [0, 0.7, 0],
+              opacity: [0, 0.5, 0],
               scale: [0.5, 1.2, 0.5],
             }}
             transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
@@ -477,28 +488,36 @@ export default function DonationSection() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.9 }}
         >
-          <p className="font-cinzel text-[10px] tracking-[0.6em] text-[#D4AF37]/60 uppercase mb-4">
+          <p className="font-cinzel text-[10px] tracking-[0.6em] uppercase mb-4"
+            style={{ color: isLight ? "rgba(194,91,47,0.75)" : "rgba(212,175,55,0.6)" }}>
             ✦ &nbsp; Your Offering, Their Miracle &nbsp; ✦
           </p>
           <h2
-            className="font-cinzel font-bold text-4xl md:text-6xl text-[#D4AF37] mb-6"
-            style={{ textShadow: "0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.15)" }}
+            className="font-cinzel font-bold text-4xl md:text-6xl mb-6"
+            style={{
+              color: isLight ? "#7B1E14" : "#D4AF37",
+              textShadow: isLight ? "none" : "0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.15)",
+            }}
           >
             Seva & Donations
           </h2>
-          <p className="font-sans font-light text-[#F5F5DC]/45 max-w-lg mx-auto text-sm leading-loose tracking-wide">
+          <p className="font-sans font-light max-w-lg mx-auto text-sm leading-loose tracking-wide"
+            style={{ color: isLight ? "rgba(92,42,14,0.75)" : "rgba(245,245,220,0.45)" }}>
             A single offering from your heart sets a thousand divine acts in motion.
           </p>
           <div className="flex items-center justify-center gap-5 mt-8">
-            <div className="h-px flex-1 max-w-[120px]" style={{ background: "linear-gradient(to right, transparent, #D4AF37)" }} />
+            <div className="h-px flex-1 max-w-[120px]"
+              style={{ background: isLight ? "linear-gradient(to right, transparent, #C25B2F)" : "linear-gradient(to right, transparent, #D4AF37)" }} />
             <motion.div
-              className="text-[#D4AF37] text-2xl"
+              className="text-2xl"
+              style={{ color: isLight ? "#C25B2F" : "#D4AF37" }}
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2.5, repeat: Infinity }}
             >
               🪷
             </motion.div>
-            <div className="h-px flex-1 max-w-[120px]" style={{ background: "linear-gradient(to left, transparent, #D4AF37)" }} />
+            <div className="h-px flex-1 max-w-[120px]"
+              style={{ background: isLight ? "linear-gradient(to left, transparent, #C25B2F)" : "linear-gradient(to left, transparent, #D4AF37)" }} />
           </div>
         </motion.div>
 
@@ -515,14 +534,19 @@ export default function DonationSection() {
                 transition={{ duration: 0.7, delay: 0.4 + i * 0.2 }}
                 className="group relative overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%)",
-                  border: "1px solid rgba(212,175,55,0.2)",
+                  background: isLight
+                    ? "linear-gradient(135deg, #FFFFFF 0%, #FFF8EE 100%)"
+                    : "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%)",
+                  border: isLight ? "1px solid rgba(194,91,47,0.2)" : "1px solid rgba(212,175,55,0.2)",
+                  boxShadow: isLight ? "0 2px 16px rgba(180,80,0,0.08)" : "none",
                 }}
               >
                 {/* Left glow bar */}
                 <motion.div
                   className="absolute left-0 top-0 bottom-0 w-0.5"
-                  style={{ background: "linear-gradient(to bottom, transparent, #D4AF37, transparent)" }}
+                  style={{ background: isLight
+                    ? "linear-gradient(to bottom, transparent, #C25B2F, transparent)"
+                    : "linear-gradient(to bottom, transparent, #D4AF37, transparent)" }}
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.8 }}
                 />
@@ -536,15 +560,20 @@ export default function DonationSection() {
                       {item.icon}
                     </motion.div>
                     <div className="flex-1">
-                      <p className="font-cinzel font-bold text-sm text-[#D4AF37] mb-0.5">{item.label}</p>
-                      <p className="font-cinzel text-[9px] tracking-widest text-[#D4AF37]/50 uppercase mb-2">{item.sub}</p>
-                      <p className="font-sans text-[11px] text-[#F5F5DC]/50 leading-relaxed">{item.desc}</p>
+                      <p className="font-cinzel font-bold text-sm mb-0.5"
+                        style={{ color: isLight ? "#7B1E14" : "#D4AF37" }}>{item.label}</p>
+                      <p className="font-cinzel text-[9px] tracking-widest uppercase mb-2"
+                        style={{ color: isLight ? "rgba(194,91,47,0.7)" : "rgba(212,175,55,0.5)" }}>{item.sub}</p>
+                      <p className="font-sans text-[11px] leading-relaxed"
+                        style={{ color: isLight ? "#5C2A0E" : "rgba(245,245,220,0.5)" }}>{item.desc}</p>
                     </div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-[#D4AF37]/10 flex justify-between items-center">
-                    <AnimatedStat value={item.stat} label={item.statLabel} inView={inView} />
+                  <div className="mt-4 pt-4 flex justify-between items-center"
+                    style={{ borderTop: isLight ? "1px solid rgba(194,91,47,0.12)" : "1px solid rgba(212,175,55,0.1)" }}>
+                    <AnimatedStat value={item.stat} label={item.statLabel} inView={inView} isLight={isLight} />
                     <motion.div
-                      className="text-[#D4AF37]/30 text-3xl font-cinzel"
+                      className="text-3xl font-cinzel"
+                      style={{ color: isLight ? "rgba(194,91,47,0.3)" : "rgba(212,175,55,0.3)" }}
                       animate={{ opacity: [0.2, 0.6, 0.2] }}
                       transition={{ duration: 3, repeat: Infinity }}
                     >
@@ -573,12 +602,16 @@ export default function DonationSection() {
               transition={{ delay: 2.2, duration: 1 }}
             >
               <p
-                className="font-cinzel text-xs tracking-[0.4em] text-[#D4AF37]/70 uppercase"
-                style={{ textShadow: "0 0 20px rgba(212,175,55,0.4)" }}
+                className="font-cinzel text-xs tracking-[0.4em] uppercase"
+                style={{
+                  color: isLight ? "#C25B2F" : "rgba(212,175,55,0.7)",
+                  textShadow: isLight ? "none" : "0 0 20px rgba(212,175,55,0.4)",
+                }}
               >
                 Punya Kamal
               </p>
-              <p className="font-sans text-[10px] text-[#F5F5DC]/30 mt-1">Sacred Lotus of Merit</p>
+              <p className="font-sans text-[10px] mt-1"
+                style={{ color: isLight ? "rgba(92,42,14,0.55)" : "rgba(245,245,220,0.3)" }}>Sacred Lotus of Merit</p>
             </motion.div>
           </motion.div>
 
@@ -592,13 +625,18 @@ export default function DonationSection() {
                 transition={{ duration: 0.7, delay: 0.4 + i * 0.2 }}
                 className="group relative overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%)",
-                  border: "1px solid rgba(212,175,55,0.2)",
+                  background: isLight
+                    ? "linear-gradient(135deg, #FFFFFF 0%, #FFF8EE 100%)"
+                    : "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 100%)",
+                  border: isLight ? "1px solid rgba(194,91,47,0.2)" : "1px solid rgba(212,175,55,0.2)",
+                  boxShadow: isLight ? "0 2px 16px rgba(180,80,0,0.08)" : "none",
                 }}
               >
                 <motion.div
                   className="absolute right-0 top-0 bottom-0 w-0.5"
-                  style={{ background: "linear-gradient(to bottom, transparent, #D4AF37, transparent)" }}
+                  style={{ background: isLight
+                    ? "linear-gradient(to bottom, transparent, #C25B2F, transparent)"
+                    : "linear-gradient(to bottom, transparent, #D4AF37, transparent)" }}
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.8 + 0.4 }}
                 />
@@ -612,15 +650,20 @@ export default function DonationSection() {
                       {item.icon}
                     </motion.div>
                     <div className="flex-1">
-                      <p className="font-cinzel font-bold text-sm text-[#D4AF37] mb-0.5">{item.label}</p>
-                      <p className="font-cinzel text-[9px] tracking-widest text-[#D4AF37]/50 uppercase mb-2">{item.sub}</p>
-                      <p className="font-sans text-[11px] text-[#F5F5DC]/50 leading-relaxed">{item.desc}</p>
+                      <p className="font-cinzel font-bold text-sm mb-0.5"
+                        style={{ color: isLight ? "#7B1E14" : "#D4AF37" }}>{item.label}</p>
+                      <p className="font-cinzel text-[9px] tracking-widest uppercase mb-2"
+                        style={{ color: isLight ? "rgba(194,91,47,0.7)" : "rgba(212,175,55,0.5)" }}>{item.sub}</p>
+                      <p className="font-sans text-[11px] leading-relaxed"
+                        style={{ color: isLight ? "#5C2A0E" : "rgba(245,245,220,0.5)" }}>{item.desc}</p>
                     </div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-[#D4AF37]/10 flex justify-between items-center">
-                    <AnimatedStat value={item.stat} label={item.statLabel} inView={inView} />
+                  <div className="mt-4 pt-4 flex justify-between items-center"
+                    style={{ borderTop: isLight ? "1px solid rgba(194,91,47,0.12)" : "1px solid rgba(212,175,55,0.1)" }}>
+                    <AnimatedStat value={item.stat} label={item.statLabel} inView={inView} isLight={isLight} />
                     <motion.div
-                      className="text-[#D4AF37]/30 text-3xl font-cinzel"
+                      className="text-3xl font-cinzel"
+                      style={{ color: isLight ? "rgba(194,91,47,0.3)" : "rgba(212,175,55,0.3)" }}
                       animate={{ opacity: [0.2, 0.6, 0.2] }}
                       transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
                     >
@@ -642,11 +685,16 @@ export default function DonationSection() {
         >
           {/* Divider */}
           <div className="flex items-center gap-6 mb-12">
-            <div className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4))" }} />
-            <p className="font-cinzel text-[10px] tracking-[0.5em] text-[#D4AF37]/60 uppercase whitespace-nowrap">
+            <div className="h-px flex-1" style={{ background: isLight
+              ? "linear-gradient(to right, transparent, rgba(194,91,47,0.4))"
+              : "linear-gradient(to right, transparent, rgba(212,175,55,0.4))" }} />
+            <p className="font-cinzel text-[10px] tracking-[0.5em] uppercase whitespace-nowrap"
+              style={{ color: isLight ? "rgba(194,91,47,0.7)" : "rgba(212,175,55,0.6)" }}>
               ✦ Choose Your Seva ✦
             </p>
-            <div className="h-px flex-1" style={{ background: "linear-gradient(to left, transparent, rgba(212,175,55,0.4))" }} />
+            <div className="h-px flex-1" style={{ background: isLight
+              ? "linear-gradient(to left, transparent, rgba(194,91,47,0.4))"
+              : "linear-gradient(to left, transparent, rgba(212,175,55,0.4))" }} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -659,20 +707,27 @@ export default function DonationSection() {
                 whileHover={{ y: -6, transition: { duration: 0.2 } }}
                 className="group cursor-pointer relative overflow-hidden text-center"
                 style={{
-                  background: "linear-gradient(160deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 100%)",
-                  border: "1px solid rgba(212,175,55,0.25)",
+                  background: isLight
+                    ? "linear-gradient(160deg, #FFFFFF 0%, #FFF8EE 100%)"
+                    : "linear-gradient(160deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 100%)",
+                  border: isLight ? "1px solid rgba(194,91,47,0.25)" : "1px solid rgba(212,175,55,0.25)",
+                  boxShadow: isLight ? "0 2px 16px rgba(180,80,0,0.08)" : "none",
                   padding: "24px 16px",
                 }}
               >
                 {/* Hover shine */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.12) 0%, transparent 60%)" }}
+                  style={{ background: isLight
+                    ? "linear-gradient(135deg, rgba(194,91,47,0.08) 0%, transparent 60%)"
+                    : "linear-gradient(135deg, rgba(212,175,55,0.12) 0%, transparent 60%)" }}
                 />
                 {/* Top glow line */}
                 <div
                   className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: "linear-gradient(to right, transparent, #D4AF37, transparent)" }}
+                  style={{ background: isLight
+                    ? "linear-gradient(to right, transparent, #C25B2F, transparent)"
+                    : "linear-gradient(to right, transparent, #D4AF37, transparent)" }}
                 />
                 <motion.div
                   className="text-3xl mb-3"
@@ -681,14 +736,14 @@ export default function DonationSection() {
                 >
                   {cat.icon}
                 </motion.div>
-                <p className="font-cinzel font-semibold text-xs text-[#D4AF37] tracking-wide mb-2">{cat.label}</p>
-                <p
-                  className="font-cinzel font-bold text-lg text-[#F5F5DC] mb-2"
-                  style={{ textShadow: "0 0 15px rgba(212,175,55,0.3)" }}
-                >
+                <p className="font-cinzel font-semibold text-xs tracking-wide mb-2"
+                  style={{ color: isLight ? "#C25B2F" : "#D4AF37" }}>{cat.label}</p>
+                <p className="font-cinzel font-bold text-lg mb-2"
+                  style={{ color: isLight ? "#7B1E14" : "#F5F5DC" }}>
                   {cat.amount}
                 </p>
-                <p className="font-sans text-[10px] text-[#F5F5DC]/35">{cat.desc}</p>
+                <p className="font-sans text-[10px]"
+                  style={{ color: isLight ? "rgba(92,42,14,0.6)" : "rgba(245,245,220,0.35)" }}>{cat.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -696,20 +751,23 @@ export default function DonationSection() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
             <motion.button
-              whileHover={{ scale: 1.03, boxShadow: "0 0 40px rgba(212,175,55,0.5)" }}
+              whileHover={{ scale: 1.03, boxShadow: isLight ? "0 0 30px rgba(194,91,47,0.4)" : "0 0 40px rgba(212,175,55,0.5)" }}
               whileTap={{ scale: 0.97 }}
-              className="px-12 py-4 font-cinzel font-bold text-sm tracking-[0.4em] uppercase text-[#1a0303]"
+              className="px-12 py-4 font-cinzel font-bold text-sm tracking-[0.4em] uppercase"
               onClick={() => navigate("/donate")}
               style={{
-                background: "linear-gradient(135deg, #F5E088, #D4AF37, #c8a84b)",
+                background: isLight
+                  ? "linear-gradient(135deg, #C25B2F, #8B1A0A)"
+                  : "linear-gradient(135deg, #F5E088, #D4AF37, #c8a84b)",
+                color: isLight ? "#FFFDF5" : "#1a0303",
                 minWidth: 260,
               }}
             >
               🙏 &nbsp; Offer Your Seva
             </motion.button>
             <div className="text-center">
-              <p className="font-cinzel text-xs text-[#D4AF37]/70">UPI: templerams@upi</p>
-              <p className="font-sans text-[10px] text-[#F5F5DC]/30 mt-1">Tax exempt under Section 80G</p>
+              <p className="font-cinzel text-xs" style={{ color: isLight ? "#C25B2F" : "rgba(212,175,55,0.7)" }}>UPI: templerams@upi</p>
+              <p className="font-sans text-[10px] mt-1" style={{ color: isLight ? "rgba(92,42,14,0.5)" : "rgba(245,245,220,0.3)" }}>Tax exempt under Section 80G</p>
             </div>
           </div>
         </motion.div>
@@ -722,14 +780,21 @@ export default function DonationSection() {
           transition={{ duration: 0.8 }}
         >
           <div className="flex items-center gap-6 mb-12">
-            <div className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4))" }} />
+            <div className="h-px flex-1" style={{ background: isLight
+              ? "linear-gradient(to right, transparent, rgba(194,91,47,0.4))"
+              : "linear-gradient(to right, transparent, rgba(212,175,55,0.4))" }} />
             <div className="text-center">
-              <p className="font-cinzel text-[10px] tracking-[0.5em] text-[#D4AF37]/60 uppercase">❋ Guardians of Dharma ❋</p>
-              <h2 className="font-cinzel font-bold text-2xl text-[#D4AF37] mt-1" style={{ textShadow: "0 0 30px rgba(212,175,55,0.3)" }}>
+              <p className="font-cinzel text-[10px] tracking-[0.5em] uppercase"
+                style={{ color: isLight ? "rgba(194,91,47,0.7)" : "rgba(212,175,55,0.6)" }}>❋ Guardians of Dharma ❋</p>
+              <h2 className="font-cinzel font-bold text-2xl mt-1"
+                style={{ color: isLight ? "#7B1E14" : "#D4AF37",
+                  textShadow: isLight ? "none" : "0 0 30px rgba(212,175,55,0.3)" }}>
                 Board of Trustees
               </h2>
             </div>
-            <div className="h-px flex-1" style={{ background: "linear-gradient(to left, transparent, rgba(212,175,55,0.4))" }} />
+            <div className="h-px flex-1" style={{ background: isLight
+              ? "linear-gradient(to left, transparent, rgba(194,91,47,0.4))"
+              : "linear-gradient(to left, transparent, rgba(212,175,55,0.4))" }} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -743,22 +808,34 @@ export default function DonationSection() {
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className="group relative overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(26,3,3,0.6) 100%)",
-                  border: "1px solid rgba(212,175,55,0.15)",
+                  background: isLight
+                    ? "linear-gradient(135deg, #FFFFFF 0%, #FFF8EE 100%)"
+                    : "linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(26,3,3,0.6) 100%)",
+                  border: isLight ? "1px solid rgba(194,91,47,0.18)" : "1px solid rgba(212,175,55,0.15)",
+                  boxShadow: isLight ? "0 2px 12px rgba(180,80,0,0.07)" : "none",
                 }}
               >
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, transparent 60%)" }}
+                  style={{ background: isLight
+                    ? "linear-gradient(135deg, rgba(194,91,47,0.06) 0%, transparent 60%)"
+                    : "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, transparent 60%)" }}
                 />
                 <div className="relative p-5 flex gap-4 items-center">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full border border-[#D4AF37]/25 flex items-center justify-center text-xl bg-[#D4AF37]/08 group-hover:border-[#D4AF37]/50 transition-colors">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors"
+                    style={{
+                      border: isLight ? "1px solid rgba(194,91,47,0.3)" : "1px solid rgba(212,175,55,0.25)",
+                      background: isLight ? "linear-gradient(135deg, #FFF0D8, #FFE0C0)" : "rgba(212,175,55,0.08)",
+                    }}>
                     {trustee.icon}
                   </div>
                   <div>
-                    <h3 className="font-cinzel font-semibold text-xs text-[#D4AF37] leading-snug mb-1">{trustee.name}</h3>
-                    <p className="font-sans text-[10px] text-[#F5F5DC]/55 mb-1">{trustee.position}</p>
-                    <p className="font-sans text-[10px] text-[#D4AF37]/40">{trustee.tenure}</p>
+                    <h3 className="font-cinzel font-semibold text-xs leading-snug mb-1"
+                      style={{ color: isLight ? "#7B1E14" : "#D4AF37" }}>{trustee.name}</h3>
+                    <p className="font-sans text-[10px] mb-1"
+                      style={{ color: isLight ? "#5C2A0E" : "rgba(245,245,220,0.55)" }}>{trustee.position}</p>
+                    <p className="font-sans text-[10px]"
+                      style={{ color: isLight ? "rgba(194,91,47,0.6)" : "rgba(212,175,55,0.4)" }}>{trustee.tenure}</p>
                   </div>
                 </div>
               </motion.div>

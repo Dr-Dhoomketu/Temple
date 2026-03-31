@@ -1,9 +1,16 @@
 import { motion } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function Footer() {
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   return (
-    <footer className="relative py-12 border-t border-[#D4AF37]/15">
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0d0101] to-transparent" />
+    <footer className="relative py-12" style={{ borderTop: `1px solid ${isLight ? "rgba(180,90,0,0.2)" : "rgba(212,175,55,0.15)"}` }}>
+      <div className="absolute inset-0" style={{
+        background: isLight
+          ? "linear-gradient(to top, #FFE8CC, #FFF3E0)"
+          : "linear-gradient(to top, #0d0101, transparent)",
+      }} />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Logo & tagline */}

@@ -3,52 +3,101 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-/* ── Shared mouse state lives outside React so refs stay stable ── */
-function makePointer() {
-  return { x: 0, y: 0 };
+/* ── Drag state: accumulated rotation + active drag tracking ── */
+interface DragState {
+  isDragging: boolean;
+  lastX: number;
+  lastY: number;
+  accumRotY: number;
+  accumRotX: number;
+  velX: number;
+  velY: number;
 }
 
-/* ── Attach pointer/touch listeners directly to the WebGL canvas ── */
-function PointerTracker({ ptr }: { ptr: ReturnType<typeof makePointer> }) {
+function makeDragState(): DragState {
+  return { isDragging: false, lastX: 0, lastY: 0, accumRotY: 0, accumRotX: 0, velX: 0, velY: 0 };
+}
+
+/* ── Attach pointer & touch listeners for full 360° drag ── */
+function DragTracker({ drag }: { drag: DragState }) {
   const { gl } = useThree();
 
   useEffect(() => {
     const el = gl.domElement;
 
-    const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      ptr.x =  ((e.clientX - r.left)  / r.width  - 0.5) * 2;  // -1 to 1
-      ptr.y = -((e.clientY - r.top)   / r.height - 0.5) * 2;
+    const onPointerDown = (e: PointerEvent) => {
+      drag.isDragging = true;
+      drag.lastX = e.clientX;
+      drag.lastY = e.clientY;
+      drag.velX = 0;
+      drag.velY = 0;
+      el.setPointerCapture(e.pointerId);
     };
-    const onLeave = () => { ptr.x = 0; ptr.y = 0; };
 
-    // Touch
-    let lastTX = 0, lastTY = 0;
-    const onTS = (e: TouchEvent) => { lastTX = e.touches[0].clientX; lastTY = e.touches[0].clientY; };
-    const onTM = (e: TouchEvent) => {
-      const dx = (e.touches[0].clientX - lastTX) / el.clientWidth  * 3;
-      const dy = (e.touches[0].clientY - lastTY) / el.clientHeight * 3;
-      ptr.x = THREE.MathUtils.clamp(ptr.x + dx, -1, 1);
-      ptr.y = THREE.MathUtils.clamp(ptr.y - dy, -1, 1);
-      lastTX = e.touches[0].clientX;
-      lastTY = e.touches[0].clientY;
+    const onPointerMove = (e: PointerEvent) => {
+      if (!drag.isDragging) return;
+      const dx = e.clientX - drag.lastX;
+      const dy = e.clientY - drag.lastY;
+      drag.velX = dx;
+      drag.velY = dy;
+      drag.accumRotY += dx * 0.012;
+      drag.accumRotX += dy * 0.008;
+      drag.accumRotX = THREE.MathUtils.clamp(drag.accumRotX, -0.55, 0.55);
+      drag.lastX = e.clientX;
+      drag.lastY = e.clientY;
     };
-    const onTE = () => { ptr.x = 0; ptr.y = 0; };
 
-    el.addEventListener("pointermove",  onMove);
-    el.addEventListener("pointerleave", onLeave);
-    el.addEventListener("touchstart",   onTS,  { passive: true });
-    el.addEventListener("touchmove",    onTM,  { passive: true });
-    el.addEventListener("touchend",     onTE);
+    const onPointerUp = () => {
+      drag.isDragging = false;
+      drag.velX = 0;
+      drag.velY = 0;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      drag.isDragging = true;
+      drag.lastX = e.touches[0].clientX;
+      drag.lastY = e.touches[0].clientY;
+      drag.velX = 0;
+      drag.velY = 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!drag.isDragging) return;
+      const dx = e.touches[0].clientX - drag.lastX;
+      const dy = e.touches[0].clientY - drag.lastY;
+      drag.velX = dx;
+      drag.velY = dy;
+      drag.accumRotY += dx * 0.012;
+      drag.accumRotX += dy * 0.008;
+      drag.accumRotX = THREE.MathUtils.clamp(drag.accumRotX, -0.55, 0.55);
+      drag.lastX = e.touches[0].clientX;
+      drag.lastY = e.touches[0].clientY;
+    };
+
+    const onTouchEnd = () => {
+      drag.isDragging = false;
+      drag.velX = 0;
+      drag.velY = 0;
+    };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerUp);
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: true });
+    el.addEventListener("touchend", onTouchEnd);
 
     return () => {
-      el.removeEventListener("pointermove",  onMove);
-      el.removeEventListener("pointerleave", onLeave);
-      el.removeEventListener("touchstart",   onTS);
-      el.removeEventListener("touchmove",    onTM);
-      el.removeEventListener("touchend",     onTE);
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
     };
-  }, [gl, ptr]);
+  }, [gl, drag]);
 
   return null;
 }
@@ -58,13 +107,13 @@ function CameraRig({ target }: { target: THREE.Box3 }) {
   const { camera } = useThree();
   useEffect(() => {
     if (target.isEmpty()) return;
-    const size   = new THREE.Vector3();
+    const size = new THREE.Vector3();
     const center = new THREE.Vector3();
     target.getSize(size);
     target.getCenter(center);
     const maxDim = Math.max(size.x, size.y, size.z);
-    const fov    = (camera as THREE.PerspectiveCamera).fov * (Math.PI / 180);
-    const dist   = (maxDim / 2 / Math.tan(fov / 2)) * 0.62;
+    const fov = (camera as THREE.PerspectiveCamera).fov * (Math.PI / 180);
+    const dist = (maxDim / 2 / Math.tan(fov / 2)) * 0.62;
     camera.position.set(center.x, center.y + size.y * 0.12, center.z + dist);
     camera.lookAt(center.x, center.y - size.y * 0.08, center.z);
     camera.updateProjectionMatrix();
@@ -72,21 +121,21 @@ function CameraRig({ target }: { target: THREE.Box3 }) {
   return null;
 }
 
-/* ── Model with smooth pointer-driven rotation ── */
+/* ── Model with full 360° drag rotation + momentum ── */
 function Model({
   baseRotY,
-  ptr,
+  drag,
   onReady,
 }: {
   baseRotY: number;
-  ptr: ReturnType<typeof makePointer>;
+  drag: DragState;
   onReady: (b: THREE.Box3) => void;
 }) {
   const { scene } = useGLTF("/models/temple.glb");
-  const groupRef  = useRef<THREE.Group>(null);
-  const reported  = useRef(false);
-  const rotY      = useRef(baseRotY);
-  const rotX      = useRef(0);
+  const groupRef = useRef<THREE.Group>(null);
+  const reported = useRef(false);
+  const currentRotY = useRef(baseRotY);
+  const currentRotX = useRef(0);
 
   const cloned = useRef<THREE.Object3D | null>(null);
   if (!cloned.current) cloned.current = scene.clone(true);
@@ -97,16 +146,27 @@ function Model({
     onReady(new THREE.Box3().setFromObject(groupRef.current));
   });
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    // idle sway + strong pointer influence
-    const tY = baseRotY + Math.sin(t * 0.22) * 0.05 + ptr.x * 1.4;
-    const tX = ptr.y * 0.3;
-    rotY.current += (tY - rotY.current) * 0.12;
-    rotX.current += (tX - rotX.current) * 0.12;
-    groupRef.current.rotation.y = rotY.current;
-    groupRef.current.rotation.x = THREE.MathUtils.clamp(rotX.current, -0.28, 0.28);
+
+    if (!drag.isDragging) {
+      /* Momentum decay + gentle auto-rotate when idle */
+      drag.velX *= 0.92;
+      drag.velY *= 0.92;
+      drag.accumRotY += drag.velX * 0.006;
+      const autoSpin = t * 0.18;
+      const targetY = baseRotY + autoSpin + drag.accumRotY + Math.sin(t * 0.3) * 0.04;
+      currentRotY.current += (targetY - currentRotY.current) * Math.min(delta * 4, 0.15);
+    } else {
+      currentRotY.current += (baseRotY + drag.accumRotY - currentRotY.current) * Math.min(delta * 10, 0.4);
+    }
+
+    const targetX = drag.accumRotX;
+    currentRotX.current += (targetX - currentRotX.current) * Math.min(delta * 8, 0.3);
+
+    groupRef.current.rotation.y = currentRotY.current;
+    groupRef.current.rotation.x = currentRotX.current;
   });
 
   return (
@@ -118,7 +178,12 @@ function Model({
 
 function Spinner() {
   const ref = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => { if (ref.current) ref.current.rotation.y = clock.getElapsedTime() * 2; });
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      ref.current.rotation.y = clock.getElapsedTime() * 2.5;
+      ref.current.rotation.x = clock.getElapsedTime() * 1.3;
+    }
+  });
   return (
     <mesh ref={ref}>
       <octahedronGeometry args={[0.35, 0]} />
@@ -127,25 +192,25 @@ function Spinner() {
   );
 }
 
-function Scene({ baseRotY, ptr }: { baseRotY: number; ptr: ReturnType<typeof makePointer> }) {
+function Scene({ baseRotY, drag }: { baseRotY: number; drag: DragState }) {
   const [box, setBox] = useState<THREE.Box3>(new THREE.Box3());
   return (
     <>
-      <PointerTracker ptr={ptr} />
+      <DragTracker drag={drag} />
       <CameraRig target={box} />
 
-      {/* Bright warm golden lighting */}
-      <ambientLight intensity={4.5} color="#FFF8E7" />
-      <directionalLight position={[8, 14, 10]}  intensity={6.5} color="#FFE8A0" />
-      <directionalLight position={[-6, 8, -6]}  intensity={3.5} color="#FFB347" />
-      <directionalLight position={[0, -4, 8]}   intensity={2.5} color="#FFF0C0" />
-      <pointLight position={[0, 12, 0]}  intensity={5.0} color="#FFD700" distance={80} />
-      <pointLight position={[6, 4, 10]}  intensity={3.5} color="#FFF0A0" distance={50} />
-      <pointLight position={[-6, 4, 10]} intensity={3.5} color="#FFF0A0" distance={50} />
-      <directionalLight position={[0, 6, -14]} intensity={2.0} color="#FF9A50" />
+      {/* Magical golden + purple lighting */}
+      <ambientLight intensity={3.5} color="#EED9FF" />
+      <directionalLight position={[8, 14, 10]} intensity={6.0} color="#FFE8A0" />
+      <directionalLight position={[-6, 8, -6]} intensity={3.0} color="#C084FC" />
+      <directionalLight position={[0, -4, 8]} intensity={2.0} color="#FFF0C0" />
+      <pointLight position={[0, 12, 0]} intensity={5.5} color="#FFD700" distance={80} />
+      <pointLight position={[6, 4, 10]} intensity={3.0} color="#FFF0A0" distance={50} />
+      <pointLight position={[-6, 4, 10]} intensity={3.0} color="#FFF0A0" distance={50} />
+      <pointLight position={[0, 6, -14]} intensity={2.0} color="#A855F7" distance={40} />
 
       <Suspense fallback={<Spinner />}>
-        <Model baseRotY={baseRotY} ptr={ptr} onReady={setBox} />
+        <Model baseRotY={baseRotY} drag={drag} onReady={setBox} />
       </Suspense>
     </>
   );
@@ -168,13 +233,10 @@ interface Props {
 
 export default function TempleModel3D({ rotationY = 0, height = "100%" }: Props) {
   const [webgl, setWebgl] = useState<boolean | null>(null);
-  // Stable pointer object — never recreated
-  const ptr = useRef(makePointer()).current;
+  const drag = useRef(makeDragState()).current;
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
-  useEffect(() => {
-    setWebgl(checkWebGL());
-  }, []);
+  useEffect(() => { setWebgl(checkWebGL()); }, []);
 
   if (webgl === null) return null;
   if (!webgl) {
@@ -186,31 +248,14 @@ export default function TempleModel3D({ rotationY = 0, height = "100%" }: Props)
             <defs>
               <linearGradient id="wG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#5a0808"/><stop offset="100%" stopColor="#2d0404"/></linearGradient>
               <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F5E088"/><stop offset="50%" stopColor="#D4AF37"/><stop offset="100%" stopColor="#9A7B1C"/></linearGradient>
-              <radialGradient id="glG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#FFD700" stopOpacity="0.3"/><stop offset="100%" stopColor="#FFD700" stopOpacity="0"/></radialGradient>
             </defs>
-            <ellipse cx="160" cy="200" rx="110" ry="90" fill="url(#glG)"/>
             <rect x="20" y="315" width="280" height="10" rx="2" fill="url(#gG)" opacity="0.9"/>
             <rect x="35" y="303" width="250" height="14" rx="2" fill="url(#gG)" opacity="0.75"/>
-            <rect x="50" y="292" width="220" height="13" rx="2" fill="#D4AF37" opacity="0.6"/>
             <rect x="70" y="190" width="180" height="104" fill="url(#wG)"/>
-            <rect x="70" y="200" width="180" height="6" fill="#D4AF37" opacity="0.35"/>
-            <rect x="70" y="278" width="180" height="5" fill="#D4AF37" opacity="0.3"/>
             <path d="M140 294 L140 245 Q140 228 160 228 Q180 228 180 245 L180 294 Z" fill="#0d0101"/>
-            <path d="M143 294 L143 247 Q143 232 160 232 Q177 232 177 247 L177 294 Z" fill="#D4AF37" opacity="0.12"/>
             <polygon points="160,18 125,130 195,130" fill="url(#gG)" opacity="0.95"/>
-            <polygon points="160,40 133,130 187,130" fill="#D4AF37" opacity="0.5"/>
-            <rect x="148" y="60" width="24" height="4" rx="2" fill="#D4AF37" opacity="0.5"/>
-            <rect x="142" y="80" width="36" height="4" rx="2" fill="#D4AF37" opacity="0.5"/>
-            <rect x="136" y="100" width="48" height="4" rx="2" fill="#D4AF37" opacity="0.5"/>
             <ellipse cx="160" cy="22" rx="8" ry="5" fill="url(#gG)"/>
-            <rect x="156" y="10" width="8" height="14" fill="url(#gG)"/>
             <ellipse cx="160" cy="10" rx="5" ry="4" fill="#FFD700"/>
-            <polygon points="95,75 72,155 118,155" fill="#D4AF37" opacity="0.75"/>
-            <polygon points="225,75 202,155 248,155" fill="#D4AF37" opacity="0.75"/>
-            <rect x="68" y="154" width="184" height="10" rx="2" fill="#D4AF37" opacity="0.7"/>
-            <rect x="68" y="162" width="184" height="30" rx="1" fill="url(#wG)"/>
-            <ellipse cx="160" cy="295" rx="18" ry="6" fill="#FFD700" opacity="0.18"/>
-            <circle cx="160" cy="291" r="3" fill="#FFD700" opacity="0.7"/>
           </svg>
         </div>
       </div>
@@ -219,19 +264,26 @@ export default function TempleModel3D({ rotationY = 0, height = "100%" }: Props)
 
   return (
     <div style={{ height, width: "100%", position: "relative", cursor: "grab" }}>
-      {/* Golden glow backdrop */}
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
-        background: "radial-gradient(ellipse 90% 70% at 50% 65%, rgba(212,175,55,0.35) 0%, rgba(180,80,0,0.12) 55%, transparent 75%)",
+        background: "radial-gradient(ellipse 90% 70% at 50% 65%, rgba(212,175,55,0.3) 0%, rgba(160,80,220,0.1) 45%, transparent 70%)",
       }} />
       <Canvas
         camera={{ fov: 45, near: 0.1, far: 2000 }}
-        gl={{ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false, toneMappingExposure: 1.8 }}
+        gl={{ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false, toneMappingExposure: 1.6 }}
         dpr={isMobile ? [1, 1] : [1, 1.5]}
-        style={{ background: "transparent", position: "relative", zIndex: 1 }}
+        style={{ background: "transparent", position: "relative", zIndex: 1, cursor: "grab" }}
       >
-        <Scene baseRotY={rotationY} ptr={ptr} />
+        <Scene baseRotY={rotationY} drag={drag} />
       </Canvas>
+      <div style={{
+        position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)",
+        fontFamily: "Cinzel, serif", fontSize: "9px", letterSpacing: "0.3em",
+        color: "rgba(212,175,55,0.4)", pointerEvents: "none", zIndex: 2,
+        textTransform: "uppercase",
+      }}>
+        Drag to rotate 360°
+      </div>
     </div>
   );
 }

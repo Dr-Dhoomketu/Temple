@@ -159,23 +159,110 @@
   }
 }
 
-/* ── Light mode overrides ── */
+/* ── Light mode: Sacred Marble Temple theme ── */
 [data-theme="light"] body {
-  background: radial-gradient(ellipse at top, #fff8e7 0%, #fdf3d0 50%, #fae8b0 100%) !important;
-  color: #3a1a00;
+  background: linear-gradient(180deg, #FFFDF5 0%, #FFF8E8 40%, #FFF3D8 100%) !important;
+  color: #2C0A00;
 }
-[data-theme="light"] .font-cinzel { color: #7a3800; }
+
+/* ── Light mode CSS variable overrides ── */
+[data-theme="light"] {
+  --background: 45 100% 98%;
+  --foreground: 15 90% 10%;
+  --card: 40 80% 97%;
+  --card-foreground: 15 90% 10%;
+  --border: 30 50% 80%;
+  --primary: 20 85% 40%;
+  --primary-foreground: 45 100% 98%;
+  --muted: 40 60% 93%;
+  --muted-foreground: 20 40% 35%;
+  --accent: 20 85% 40%;
+  --accent-foreground: 45 100% 98%;
+}
+
+/* ── Light mode section backgrounds ── */
+[data-theme="light"] section {
+  background: transparent !important;
+}
+
+/* ── Light mode: marble card surfaces ── */
+[data-theme="light"] .bg-\[\#1a0303\]\/95,
+[data-theme="light"] .bg-\[\#1a0303\]\/98 {
+  background-color: rgba(255, 252, 240, 0.97) !important;
+}
+
+/* ── Light mode: text color overrides ── */
+[data-theme="light"] .text-\[\#F5F5DC\],
 [data-theme="light"] .text-\[\#F5F5DC\]\/60,
 [data-theme="light"] .text-\[\#F5F5DC\]\/70,
-[data-theme="light"] .text-\[\#F5F5DC\]\/80 { color: rgba(80,30,0,0.75) !important; }
+[data-theme="light"] .text-\[\#F5F5DC\]\/80,
+[data-theme="light"] .text-\[\#F5F5DC\]\/90 { color: rgba(44, 10, 0, 0.82) !important; }
 [data-theme="light"] .text-\[\#F5F5DC\]\/50,
-[data-theme="light"] .text-\[\#F5F5DC\]\/40 { color: rgba(80,30,0,0.55) !important; }
-[data-theme="light"] .bg-\[\#1a0303\]\/95 { background-color: rgba(255,248,230,0.95) !important; }
-[data-theme="light"] .bg-\[\#1a0303\]\/98 { background-color: rgba(255,248,230,0.98) !important; }
-[data-theme="light"] .border-\[\#D4AF37\]\/20 { border-color: rgba(180,100,0,0.25) !important; }
-[data-theme="light"] section { background: transparent !important; }
-[data-theme="light"] .absolute.inset-0[class*="bg-gradient"] {
-  opacity: 0.15 !important;
+[data-theme="light"] .text-\[\#F5F5DC\]\/40,
+[data-theme="light"] .text-\[\#F5F5DC\]\/30 { color: rgba(44, 10, 0, 0.5) !important; }
+
+/* ── Light mode: gold text stays gold but richer ── */
+[data-theme="light"] .text-\[\#D4AF37\] { color: #B8520A !important; }
+[data-theme="light"] .text-gold { color: #B8520A !important; }
+
+/* ── Light mode: borders ── */
+[data-theme="light"] .border-\[\#D4AF37\]\/20  { border-color: rgba(184, 82, 10, 0.22) !important; }
+[data-theme="light"] .border-\[\#D4AF37\]\/15  { border-color: rgba(184, 82, 10, 0.16) !important; }
+
+/* ── Light mode: dark section backgrounds → ivory ── */
+[data-theme="light"] .bg-\[\#080101\],
+[data-theme="light"] [style*="background: #080101"],
+[data-theme="light"] [style*="background:#080101"] {
+  background: #FFFDF5 !important;
+}
+
+/* ── Light mode: donation section particles → saffron ── */
+[data-theme="light"] .font-cinzel { color: #7a2800; }
+
+/* ── Light mode: suppress dark glow effects ── */
+[data-theme="light"] .gold-glow {
+  text-shadow: 0 1px 4px rgba(184, 82, 10, 0.3) !important;
+}
+[data-theme="light"] .divine-glow {
+  box-shadow: 0 4px 24px rgba(184, 82, 10, 0.15) !important;
+}
+
+/* ── Light mode: donation impact cards ── */
+[data-theme="light"] [style*="rgba(212,175,55,0.07)"],
+[data-theme="light"] [style*="rgba(212,175,55,0.02)"] {
+  background: rgba(255, 248, 230, 0.9) !important;
+  border-color: rgba(184, 82, 10, 0.2) !important;
+}
+
+/* ── Light mode: trustee cards ── */
+[data-theme="light"] [style*="rgba(26,3,3,0.6)"] {
+  background: rgba(255, 252, 240, 0.95) !important;
+}
+
+/* ── Light mode: donation category cards ── */
+[data-theme="light"] [style*="rgba(212,175,55,0.08)"] {
+  background: rgba(255, 248, 230, 0.85) !important;
+}
+
+/* ── Light mode: animated stat numbers ── */
+[data-theme="light"] .font-cinzel.font-bold.text-3xl.text-\[\#D4AF37\] {
+  color: #B8520A !important;
+  text-shadow: none !important;
+}
+
+/* ── Light mode: lotus tagline ── */
+[data-theme="light"] [style*="rgba(245,245,220,0.3)"],
+[data-theme="light"] [style*="rgba(245,245,220,0.45)"] {
+  color: rgba(44, 10, 0, 0.55) !important;
+}
+
+/* ── Light mode: CTA UPI text ── */
+[data-theme="light"] .text-\[\#D4AF37\]\/70 { color: rgba(184, 82, 10, 0.75) !important; }
+
+/* ── Light mode: donation CTA button text ── */
+[data-theme="light"] .text-\[\#1a0303\] { color: #FFFDF5 !important; }
+[data-theme="light"] [style*="background: linear-gradient(135deg, #F5E088, #D4AF37"] {
+  background: linear-gradient(135deg, #C25B2F, #8B1A0A) !important;
 }
 
 
@@ -261,6 +348,11 @@
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translateX(0px) translateY(0px) scale(1); }
+  100% { transform: translateX(40px) translateY(-20px) scale(1.15); }
 }
 
 @keyframes diya-flicker {
