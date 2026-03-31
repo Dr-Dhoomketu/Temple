@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Poppins:wght@300;400;500;600&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --button-outline: rgba(212,175,55, .20);
+  --badge-outline: rgba(212,175,55, .10);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(212,175,55, .05);
+  --elevate-2: rgba(212,175,55, .10);
+
+  --background: 0 60% 10%;
+  --foreground: 48 60% 93%;
+  --border: 30 40% 25%;
+  --card: 0 55% 13%;
+  --card-foreground: 48 60% 93%;
+  --card-border: 30 40% 22%;
+  --sidebar: 0 58% 11%;
+  --sidebar-foreground: 48 60% 93%;
+  --sidebar-border: 30 40% 22%;
+  --sidebar-primary: 43 74% 53%;
+  --sidebar-primary-foreground: 0 60% 10%;
+  --sidebar-accent: 0 55% 16%;
+  --sidebar-accent-foreground: 48 60% 93%;
+  --sidebar-ring: 43 74% 53%;
+  --popover: 0 58% 11%;
+  --popover-foreground: 48 60% 93%;
+  --popover-border: 30 40% 22%;
+  --primary: 43 74% 53%;
+  --primary-foreground: 0 60% 10%;
+  --secondary: 0 55% 16%;
+  --secondary-foreground: 48 60% 93%;
+  --muted: 0 50% 15%;
+  --muted-foreground: 48 30% 65%;
+  --accent: 43 74% 53%;
+  --accent-foreground: 0 60% 10%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 48 60% 93%;
+  --input: 30 40% 25%;
+  --ring: 43 74% 53%;
+  --chart-1: 43 74% 53%;
+  --chart-2: 0 55% 40%;
+  --chart-3: 30 60% 45%;
+  --chart-4: 48 60% 60%;
+  --chart-5: 15 70% 40%;
+
+  --app-font-sans: 'Poppins', sans-serif;
+  --app-font-serif: 'Cinzel', serif;
+  --app-font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+
+  --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.30);
+  --shadow-xs: 0px 2px 4px 0px rgba(0,0,0,0.30);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.30), 0px 1px 2px -1px rgba(0,0,0,0.20);
+  --shadow: 0px 4px 8px 0px rgba(0,0,0,0.30), 0px 1px 2px -1px rgba(0,0,0,0.20);
+  --shadow-md: 0px 4px 8px 0px rgba(0,0,0,0.40), 0px 2px 4px -1px rgba(0,0,0,0.30);
+  --shadow-lg: 0px 8px 16px 0px rgba(0,0,0,0.40), 0px 4px 6px -1px rgba(0,0,0,0.30);
+  --shadow-xl: 0px 12px 24px 0px rgba(0,0,0,0.50), 0px 8px 10px -1px rgba(0,0,0,0.40);
+  --shadow-2xl: 0px 24px 48px 0px rgba(0,0,0,0.50);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background: radial-gradient(ellipse at top, #3d0808 0%, #1a0303 60%, #0d0101 100%);
+    min-height: 100vh;
+    transition: background 0.5s ease, color 0.5s ease;
+  }
+}
+
+/* ── Light mode: Sacred Marble Temple theme ── */
+[data-theme="light"] body {
+  background: linear-gradient(180deg, #FFFDF5 0%, #FFF8E8 40%, #FFF3D8 100%) !important;
+  color: #2C0A00;
+}
+
+/* ── Light mode CSS variable overrides ── */
+[data-theme="light"] {
+  --background: 45 100% 98%;
+  --foreground: 15 90% 10%;
+  --card: 40 80% 97%;
+  --card-foreground: 15 90% 10%;
+  --border: 30 50% 80%;
+  --primary: 20 85% 40%;
+  --primary-foreground: 45 100% 98%;
+  --muted: 40 60% 93%;
+  --muted-foreground: 20 40% 35%;
+  --accent: 20 85% 40%;
+  --accent-foreground: 45 100% 98%;
+}
+
+/* ── Light mode section backgrounds ── */
+[data-theme="light"] section {
+  background: transparent !important;
+}
+
+/* ── Light mode: marble card surfaces ── */
+[data-theme="light"] .bg-\[\#1a0303\]\/95,
+[data-theme="light"] .bg-\[\#1a0303\]\/98 {
+  background-color: rgba(255, 252, 240, 0.97) !important;
+}
+
+/* ── Light mode: text color overrides ── */
+[data-theme="light"] .text-\[\#F5F5DC\],
+[data-theme="light"] .text-\[\#F5F5DC\]\/60,
+[data-theme="light"] .text-\[\#F5F5DC\]\/70,
+[data-theme="light"] .text-\[\#F5F5DC\]\/80,
+[data-theme="light"] .text-\[\#F5F5DC\]\/90 { color: rgba(44, 10, 0, 0.82) !important; }
+[data-theme="light"] .text-\[\#F5F5DC\]\/50,
+[data-theme="light"] .text-\[\#F5F5DC\]\/40,
+[data-theme="light"] .text-\[\#F5F5DC\]\/30 { color: rgba(44, 10, 0, 0.5) !important; }
+
+/* ── Light mode: gold text stays gold but richer ── */
+[data-theme="light"] .text-\[\#D4AF37\] { color: #B8520A !important; }
+[data-theme="light"] .text-gold { color: #B8520A !important; }
+
+/* ── Light mode: borders ── */
+[data-theme="light"] .border-\[\#D4AF37\]\/20  { border-color: rgba(184, 82, 10, 0.22) !important; }
+[data-theme="light"] .border-\[\#D4AF37\]\/15  { border-color: rgba(184, 82, 10, 0.16) !important; }
+
+/* ── Light mode: dark section backgrounds → ivory ── */
+[data-theme="light"] .bg-\[\#080101\],
+[data-theme="light"] [style*="background: #080101"],
+[data-theme="light"] [style*="background:#080101"] {
+  background: #FFFDF5 !important;
+}
+
+/* ── Light mode: donation section particles → saffron ── */
+[data-theme="light"] .font-cinzel { color: #7a2800; }
+
+/* ── Light mode: suppress dark glow effects ── */
+[data-theme="light"] .gold-glow {
+  text-shadow: 0 1px 4px rgba(184, 82, 10, 0.3) !important;
+}
+[data-theme="light"] .divine-glow {
+  box-shadow: 0 4px 24px rgba(184, 82, 10, 0.15) !important;
+}
+
+/* ── Light mode: donation impact cards ── */
+[data-theme="light"] [style*="rgba(212,175,55,0.07)"],
+[data-theme="light"] [style*="rgba(212,175,55,0.02)"] {
+  background: rgba(255, 248, 230, 0.9) !important;
+  border-color: rgba(184, 82, 10, 0.2) !important;
+}
+
+/* ── Light mode: trustee cards ── */
+[data-theme="light"] [style*="rgba(26,3,3,0.6)"] {
+  background: rgba(255, 252, 240, 0.95) !important;
+}
+
+/* ── Light mode: donation category cards ── */
+[data-theme="light"] [style*="rgba(212,175,55,0.08)"] {
+  background: rgba(255, 248, 230, 0.85) !important;
+}
+
+/* ── Light mode: animated stat numbers ── */
+[data-theme="light"] .font-cinzel.font-bold.text-3xl.text-\[\#D4AF37\] {
+  color: #B8520A !important;
+  text-shadow: none !important;
+}
+
+/* ── Light mode: lotus tagline ── */
+[data-theme="light"] [style*="rgba(245,245,220,0.3)"],
+[data-theme="light"] [style*="rgba(245,245,220,0.45)"] {
+  color: rgba(44, 10, 0, 0.55) !important;
+}
+
+/* ── Light mode: CTA UPI text ── */
+[data-theme="light"] .text-\[\#D4AF37\]\/70 { color: rgba(184, 82, 10, 0.75) !important; }
+
+/* ── Light mode: donation CTA button text ── */
+[data-theme="light"] .text-\[\#1a0303\] { color: #FFFDF5 !important; }
+[data-theme="light"] [style*="background: linear-gradient(135deg, #F5E088, #D4AF37"] {
+  background: linear-gradient(135deg, #C25B2F, #8B1A0A) !important;
+}
+
+
+/* ── Performance: ensure animated elements use GPU compositing ── */
+/* Note: backface-visibility on ALL elements can break 3D transforms — scope it */
+.animate-gpu {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Keyframes used by Hero & TempleSVG */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.8;  }
+}
+
+@keyframes rayPulse {
+  0%, 100% { opacity: var(--ray-base, 0.3); }
+  50%       { opacity: calc(var(--ray-base, 0.3) * 1.8); }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0)   scale(1);   opacity: 0.8; }
+  60%  { transform: translateY(-80px) scale(1.05); opacity: 0.5; }
+  100% { transform: translateY(-160px) scale(0.8); opacity: 0; }
+}
+
+@keyframes divaFlicker {
+  0%, 100% { opacity: 0.7; transform: scale(1);    }
+  33%       { opacity: 0.5; transform: scale(0.95); }
+  66%       { opacity: 0.9; transform: scale(1.05); }
+}
+
+/* Temple-specific styles */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.text-gold {
+  color: #D4AF37;
+}
+
+.text-cream {
+  color: #F5F5DC;
+}
+
+.bg-maroon {
+  background-color: #4A0404;
+}
+
+.bg-deep-maroon {
+  background-color: #1a0303;
+}
+
+.border-gold {
+  border-color: #D4AF37;
+}
+
+.gold-glow {
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
+}
+
+.divine-glow {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), 0 0 60px rgba(212, 175, 55, 0.1);
+}
+
+.light-ray {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(212, 175, 55, 0.8), transparent);
+  animation: ray-pulse 3s ease-in-out infinite;
+}
+
+@keyframes ray-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translateX(0px) translateY(0px) scale(1); }
+  100% { transform: translateX(40px) translateY(-20px) scale(1.15); }
+}
+
+@keyframes diya-flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  25% { opacity: 0.85; transform: scale(0.98); }
+  50% { opacity: 0.95; transform: scale(1.02); }
+  75% { opacity: 0.8; transform: scale(0.99); }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+.diya-flicker {
+  animation: diya-flicker 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, #D4AF37 0%, #F5E088 40%, #D4AF37 60%, #B8962F 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.ornament-border {
+  position: relative;
+}
+
+.ornament-border::before,
+.ornament-border::after {
+  content: '❋';
+  color: #D4AF37;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  margin: 0 0.5rem;
+}
+
+@layer utilities {
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+}
