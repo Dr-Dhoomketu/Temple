@@ -6,6 +6,7 @@ import PujaTimings from "@/components/PujaTimings";
 import DonationSection from "@/components/DonationSection";
 import Footer from "@/components/Footer";
 import DonatePage from "@/pages/DonatePage";
+import Chatbot from "@/components/Chatbot";
 import { ThemeProvider } from "@/context/ThemeContext";
 
 function Home() {
@@ -32,6 +33,7 @@ function App() {
           <Route path="/donate" component={DonatePage} />
           <Route component={Home} />
         </Switch>
+        <Chatbot />
       </div>
     </ThemeProvider>
   );
