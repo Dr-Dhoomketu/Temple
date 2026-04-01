@@ -286,7 +286,7 @@ export default function Hero() {
               } : {
                 background: heroTitleGradient,
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                filter: "drop-shadow(0 0 2px #000) drop-shadow(0 0 8px rgba(0,0,0,0.9)) drop-shadow(0 2px 4px rgba(0,0,0,1))",
+                filter: "drop-shadow(0 0 12px rgba(212,175,55,0.9)) drop-shadow(0 0 28px rgba(255,215,0,0.5)) drop-shadow(0 0 2px rgba(212,175,55,1))",
               }}
               initial={{ opacity: 0, scale: 0.8, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: 0.38, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}>
