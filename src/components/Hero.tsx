@@ -250,8 +250,8 @@ export default function Hero() {
               inset: "-24px -32px",
               background: isLight
                 ? "radial-gradient(ellipse at center, rgba(255,255,255,0.25) 0%, transparent 70%)"
-                : "radial-gradient(ellipse at center, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 50%, transparent 80%)",
-              backdropFilter: isLight ? "none" : "blur(2px)",
+                : "radial-gradient(ellipse at center, rgba(212,175,55,0.06) 0%, transparent 70%)",
+              backdropFilter: "none",
               pointerEvents: "none",
               zIndex: -1,
             }} />
