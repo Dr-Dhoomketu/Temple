@@ -5,6 +5,13 @@ import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { buildDonationEmail } from "./emailTemplate.js";
 
+process.on("uncaughtException", (err) => {
+  console.error("[Server] Uncaught exception (kept alive):", err.message);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("[Server] Unhandled rejection (kept alive):", reason);
+});
+
 const app = express();
 const PORT = process.env.EMAIL_SERVER_PORT || 3001;
 
@@ -128,6 +135,6 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", gmail: !!process.env.GMAIL_USER, gemini: geminiReady });
 });
 
-app.listen(PORT, "localhost", () => {
-  console.log(`[Server] Email server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`[Server] Express server running on port ${PORT}`);
 });

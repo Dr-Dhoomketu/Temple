@@ -10,6 +10,45 @@ type Message = {
 
 type Stage = "ask_name" | "chatting";
 
+const KB: { keywords: string[]; response: (n: string) => string }[] = [
+  {
+    keywords: ["time", "timing", "aarti", "open", "close", "schedule", "puja", "hours", "when", "morning", "evening"],
+    response: (n) => `🪔 Here are our daily Puja timings, ${n}:\n\n🌅 Morning\n• Mangala Aarti — 4:30 AM\n• Shringar Aarti — 6:00 AM\n• Rajbhog Aarti — 11:30 AM\n\n🌙 Evening\n• Sandhya Aarti — 5:30 PM\n• Shayan Aarti — 7:00 PM\n• Shayan Bhog — 8:30 PM\n\nTemple open: 4:00 AM – 9:00 PM daily. 🙏`,
+  },
+  {
+    keywords: ["donat", "seva", "contribute", "fund", "money", "pay", "offer", "how to give", "how can i help"],
+    response: (n) => `🙏 ${n}, you can offer seva through:\n\n• Nit Seva — Daily rituals\n• Abhishek Seva — Sacred bathing\n• Bhog Prasad Seva — Food offering\n• Diya Seva — Lamp offering\n• Flowers & Decoration Seva\n• Special Puja Booking\n\nClick 'Donate Now' at the top to contribute securely.`,
+  },
+  {
+    keywords: ["contact", "address", "location", "phone", "email", "reach", "find", "where", "call"],
+    response: () => `📍 Shri Ram Mandir\n\n🏛️ Temple Road, Ayodhya, UP 224123\n📞 +91 98765 43210\n✉️ info@shrirammandir.org\n🕐 4:00 AM – 9:00 PM daily`,
+  },
+  {
+    keywords: ["about", "history", "mandir", "temple", "story", "built", "since", "1975"],
+    response: () => `🛕 Shri Ram Mandir is a sacred space dedicated to Lord Ram, serving devotees since 1975.\n\nIt is a centre of spiritual energy, daily worship, and community devotion. Our Pujaris perform all ceremonies with unwavering reverence.\n\nॐ जय श्री राम`,
+  },
+  {
+    keywords: ["ram", "lord", "deity", "god", "bhagwan", "ramayana", "hanuman", "sita", "lakshman"],
+    response: () => `🙏 Lord Ram is the seventh avatar of Vishnu, revered as the ideal man — embodying truth, righteousness, and devotion. His life story, the Ramayana, is a timeless guide on dharma.\n\nHanumanji, his greatest devotee, symbolises strength and selfless service. Visiting the mandir and chanting "Jai Shri Ram" is believed to bring peace and divine blessings.`,
+  },
+  {
+    keywords: ["festival", "special", "occasion", "navratri", "diwali", "ram navami", "jayanti"],
+    response: (n) => `✨ ${n}, on festivals we hold special extended Aarti ceremonies:\n\n• Ram Navami — Lord Ram's birth celebration\n• Diwali — Grand Diya ceremony\n• Navratri — Nine nights of devotion\n• Hanuman Jayanti — Special Puja\n\nContact us for specific timings on festival days.`,
+  },
+  {
+    keywords: ["prasad", "food", "bhog", "eat", "prashad"],
+    response: () => `🍯 Prasad is distributed after every Aarti. The Rajbhog Aarti at 11:30 AM includes a special food offering.\n\nYou can also sponsor Bhog Prasad Seva through our donation page.`,
+  },
+];
+
+function localFallback(text: string, name: string): string {
+  const lower = text.toLowerCase();
+  for (const entry of KB) {
+    if (entry.keywords.some((k) => lower.includes(k))) return entry.response(name);
+  }
+  return `🙏 ${name}, I'd be happy to help! You can ask me about puja timings, donations, seva options, the temple's history, or how to contact us.`;
+}
+
 let msgId = 0;
 const makeMsg = (from: Message["from"], text: string): Message => ({ id: ++msgId, from, text });
 
@@ -74,11 +113,11 @@ export default function Chatbot() {
         body: JSON.stringify({ message: trimmed, history, visitorName }),
       });
 
-      if (!res.ok) throw new Error("Server error");
       const data = await res.json();
-      appendBot(data.reply || "🙏 I'm sorry, I couldn't process that. Please try again.");
+      if (!res.ok || data.error) throw new Error(data.error || "Server error");
+      appendBot(data.reply);
     } catch {
-      appendBot("🙏 I'm having trouble connecting right now. Please try again in a moment.");
+      appendBot(localFallback(trimmed, visitorName));
     }
   };
 
